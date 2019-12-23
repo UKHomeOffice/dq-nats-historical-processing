@@ -50,7 +50,8 @@ VOLUME ["/NATS"]
 RUN chown -R runner:runner /NATS
 
 RUN chown runner:runner /docker-entrypoint.sh && \
-chmod +x /docker-entrypoint.sh
+chmod +x /docker-entrypoint.sh && \
+chmod +x /bin/run_nats.ksh
 
 USER ${USERMAP_UID}
 
@@ -58,10 +59,6 @@ WORKDIR /NATS
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
 
-# Start PM2
-CMD pm2-docker /NATS/scripts/ecosystem.config.js  -- --config $SSH_REMOTE_HOST $SSH_REMOTE_USER $SSH_PRIVATE_KEY_PATH $SSH_LANDING_DIR $S3_BUCKET_NAME \
-    $S3_KEY_PREFIX $S3_ACCESS_KEY_ID $S3_SECRET_ACCESS_KEY $GA_S3_BUCKET_NAME $GA_S3_KEY_PREFIX $GA_S3_ACCESS_KEY_ID $GA_S3_SECRET_ACCESS_KEY \
-    $CLAMAV_URL $CLAMAV_PORT $SLACK_WEBHOOK
+# Execute Shell Script.
 
-# Save PM2 configuration
-RUN pm2 save
+CMD /NATS/bin/run_nats.ksh
