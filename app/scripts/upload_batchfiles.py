@@ -20,13 +20,6 @@ logging.getLogger('botocore').setLevel(logging.CRITICAL)
 logging.getLogger('s3transfer').setLevel(logging.CRITICAL)
 logging.getLogger('urllib3').setLevel(logging.CRITICAL)
 
-#PROFILE="notprod"
-#BUCKET_INPUT='s3-dq-nats-archive-notprod'
-#PREFIX_INPUT='2018/new_test'
-#OUTPUT_BUCKET = "s3-dq-nats-internal-notprod/processed/fpl"
-BASE_PATH = '/Users/sbommireddy/Documents/tmp/'
-LOG_FILE = f'{BASE_PATH}/nats_hist_batch_upload.log'
-
 S3_ACCESS_KEY_ID        = os.environ['S3_ACCESS_KEY_ID']
 S3_SECRET_ACCESS_KEY    = os.environ['S3_SECRET_ACCESS_KEY']
 S3_REGION_NAME          = os.environ['S3_REGION_NAME']
@@ -34,15 +27,9 @@ SLACK_WEBHOOK           = os.environ['SLACK_WEBHOOK']
 BUCKET_INPUT            = os.environ['BUCKET_INPUT']
 PREFIX_INPUT            = os.environ['PREFIX_INPUT']
 OUTPUT_BUCKET            = os.environ['OUTPUT_BUCKET']
-#BASE_PATH               = '/NATS/scripts'
-#LOG_FILE                = '/NATS/log/nats_hist_batch_setup.log'
-
+BASE_PATH               = '/NATS/scripts'
+LOG_FILE                = '/NATS/log/nats_hist_batch_setup.log'
 CSV_SUFFIX = PREFIX_INPUT.split('/')[-1]
-
-'''
-BUCKET_INPUT='s3-dq-nats-archive-prod'
-PREFIX_INPUT='nats/2019/12/16'
-'''
 
 def batch_check(myfile):
         try:
