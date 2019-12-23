@@ -13,11 +13,9 @@ RUN mkdir -p \
              /tmp/NATS/log \
              /tmp/NATS/bin \
              /NATS \
-             /home/runner/.pm2 \
              /home/runner/.ssh
 
 COPY packages.txt /tmp/NATS/scripts
-COPY ecosystem.config.js /tmp/NATS/scripts
 COPY docker-entrypoint.sh /
 ADD bin /tmp/NATS/bin
 ADD scripts /tmp/NATS/scripts
@@ -28,7 +26,6 @@ RUN groupadd -r runner && \
     groupadd docker && \
     usermod -aG docker runner && \
     chown -R runner:runner /NATS && \
-    chown -R runner:runner /home/runner/.pm2 && \
     chown -R runner:runner /home/runner/.ssh
 
 # Install script dependencies
@@ -48,11 +45,6 @@ RUN python -m pip install --no-cache-dir -r /tmp/NATS/scripts/packages.txt
 # Fix yum installer with Python3.7 running as a global default
 RUN sed -i '/#!\/usr\/bin\/python/c\#!\/usr\/bin\/python2.7' /usr/bin/yum && \
     sed -i '/#! \/usr\/bin\/python/c\#! \/usr\/bin\/python2.7' /usr/libexec/urlgrabber-ext-down
-
-# Install PM2
-RUN curl -sL https://raw.githubusercontent.com/nodesource/distributions/master/rpm/setup_11.x -o setup_11.x && bash setup_11.x && rm setup_11.x && \
-    yum install -y nodejs && \
-    npm install -g pm2
 
 VOLUME ["/NATS"]
 RUN chown -R runner:runner /NATS
