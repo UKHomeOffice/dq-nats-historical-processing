@@ -8,14 +8,6 @@ from logging.handlers import TimedRotatingFileHandler
 import csv
 
 
-#PROFILE="notprod"
-#BUCKET_INPUT='s3-dq-nats-archive-notprod'
-#PREFIX_INPUT='2018/new_test'
-#BATCHSIZE=300
-BASE_PATH = '/Users/sbommireddy/Documents/tmp/'
-LOG_FILE = f'{BASE_PATH}/nats_hist_batch_setup.log'
-
-
 BATCHSIZE               = int(os.environ['BATCHSIZE'])
 S3_ACCESS_KEY_ID        = os.environ['S3_ACCESS_KEY_ID']
 S3_SECRET_ACCESS_KEY    = os.environ['S3_SECRET_ACCESS_KEY']
@@ -23,9 +15,8 @@ S3_REGION_NAME          = os.environ['S3_REGION_NAME']
 SLACK_WEBHOOK           = os.environ['SLACK_WEBHOOK']
 BUCKET_INPUT            = os.environ['BUCKET_INPUT']
 PREFIX_INPUT            = os.environ['PREFIX_INPUT']
-
-#BASE_PATH               = '/NATS/scripts'
-#LOG_FILE                = '/NATS/log/nats_hist_batch_setup.log'
+BASE_PATH               = '/NATS/scripts'
+LOG_FILE                = '/NATS/log/nats_hist_batch_setup.log'
 CSV_SUFFIX              = PREFIX_INPUT.split('/')[-1]
 
 def send_message_to_slack(text):
@@ -79,7 +70,6 @@ def get_matching_s3_objects(bucket, prefix="", suffix=""):
     :param suffix: Only fetch objects whose keys end with
         this suffix (optional).
     """
-    #session = boto3.Session(profile_name=PROFILE)
     boto_s3_session = boto3.Session(
         aws_access_key_id=S3_ACCESS_KEY_ID,
         aws_secret_access_key=S3_SECRET_ACCESS_KEY,
@@ -159,6 +149,8 @@ def main():
         writer = csv.writer(csv_file)
         for key, value in new_dict.items():
             writer.writerow([key, value])
+
+    logger.info('Batch CSV Written Successfully')
 
 if __name__ == '__main__':
     main()
