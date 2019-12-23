@@ -1,13 +1,12 @@
-# dq-nats-sftp-python
+# dq-nats-historical-processing
 
 [![Docker Repository on Quay](https://quay.io/repository/ukhomeofficedigital/dq-nats-sftp-python/status "Docker Repository on Quay")](https://quay.io/repository/ukhomeofficedigital/dq-nats-sftp-python)
 
 A collection of Docker containers running a data pipeline.
 Tasks include:
-- SFTP LIST files
-- SFTP GET from a remote SFTP server
-- Running virus check on each file pulled from SFTP by sending them to ClamAV API
-- AWS S3 PUT files to an S3 bucket
+- Go through the S3 LOCATION provided and prepare a list of batch files.
+- Download the batch files from S3 (NATS ARCHIVE)
+- Process the downloaded S3 files, transform and AWS S3 PUT files to an S3 bucket (NATS INTERNAL)
 
 ## Dependencies
 
@@ -16,6 +15,7 @@ Tasks include:
 - Drone
 - AWS CLI
 - AWS Keys with PUT access to S3
+- AWS Keys with GET access from S3
 - Kubernetes
 
 ## Structure
@@ -29,7 +29,9 @@ Tasks include:
     - *DQ_NATS_file_ingest*: Python script used with PM2 to declare imported files to PM2 at runtime
   - **scripts/**
     - *__init__.py*: declare Python module import
-    - *DQ_NATS_file_ingest.py*: Python3.7 script running within the container
+    - *prepare_batch_csv.py*: Python3.7 script running within the container
+    - *download_batchfiles.py*: Python3.7 script running within the container
+    - *upload_batchfiles.py*: Python3.7 script running within the container
     - *settings.py*: declare variables passed to the *DQ_NATS_file_ingest.py* file at runtime
   - **test/**
     - *start.sh*: Download, build and run Docker containers
@@ -56,8 +58,9 @@ The POD consists of 3 (three) Docker containers responsible for handling data.
 
 ## Data flow
 
-- *dq-nats-data-ingest* GET files from an external SFTP server
-- *dq-nats-data-ingest* DELETE files from SFTP
+- *prepare_batch_csv.py* GET files from an external SFTP server
+- *download_batchfiles.py* DELETE files from SFTP
+- *upload_batchfiles.py* DELETE files from SFTP
 - sending these files to *clamav-api* with destination *localhost:8080*
 - files are being sent from *clamav-api* to *clamav* with destination *localhost:3310*
 - *OK* or *!OK* response text is sent back to *dq-nats-data-ingest*
@@ -131,4 +134,4 @@ If the logs read that the private key found is not a valid format, then cat your
 ```
 ssh-keygen -t rsa -b 4096 -C "email@email.com" -m PEM -f /Path-to-file/id_rsa
 ```
-Some versions of macs auto-format ssh-keys to OPENSSH even when RSA is specified and need to be converted using this command. 
+Some versions of macs auto-format ssh-keys to OPENSSH even when RSA is specified and need to be converted using this command.
