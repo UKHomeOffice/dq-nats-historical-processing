@@ -6,6 +6,8 @@ import logging
 from urllib.parse import unquote
 from logging.handlers import TimedRotatingFileHandler
 import csv
+import random
+import string
 
 
 BATCHSIZE               = int(os.environ['BATCHSIZE'])
@@ -16,7 +18,8 @@ SLACK_WEBHOOK           = os.environ['SLACK_WEBHOOK']
 BUCKET_INPUT            = os.environ['BUCKET_INPUT']
 PREFIX_INPUT            = os.environ['PREFIX_INPUT']
 BASE_PATH               = '/NATS/scripts'
-LOG_FILE                = '/NATS/log/nats_hist_batch_setup.log'
+LOG_SUFFIX              = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
+LOG_FILE                = '/NATS/log/nats_hist_batch_setup' + LOG_SUFFIX
 CSV_SUFFIX              = PREFIX_INPUT.split('/')[-1]
 
 def send_message_to_slack(text):

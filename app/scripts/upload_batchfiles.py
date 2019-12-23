@@ -10,6 +10,8 @@ import time
 import concurrent.futures
 import csv
 from datetime import datetime
+import random
+import string
 
 startTime = datetime.now()
 
@@ -28,7 +30,8 @@ BUCKET_INPUT            = os.environ['BUCKET_INPUT']
 PREFIX_INPUT            = os.environ['PREFIX_INPUT']
 OUTPUT_BUCKET            = os.environ['OUTPUT_BUCKET']
 BASE_PATH               = '/NATS/scripts'
-LOG_FILE                = '/NATS/log/nats_hist_batch_setup.log'
+LOG_SUFFIX = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
+LOG_FILE                = '/NATS/log/nats_hist_batch_upload' + LOG_SUFFIX
 CSV_SUFFIX = PREFIX_INPUT.split('/')[-1]
 
 def batch_check(myfile):

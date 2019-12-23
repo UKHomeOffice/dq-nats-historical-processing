@@ -10,6 +10,8 @@ import time
 import concurrent.futures
 import csv
 from datetime import datetime
+import random
+import string
 
 startTime = datetime.now()
 logger = logging.getLogger()
@@ -19,9 +21,6 @@ logging.getLogger('botocore').setLevel(logging.CRITICAL)
 logging.getLogger('s3transfer').setLevel(logging.CRITICAL)
 logging.getLogger('urllib3').setLevel(logging.CRITICAL)
 
-BASE_PATH = '/Users/sbommireddy/Documents/tmp/'
-LOG_FILE = f'{BASE_PATH}/nats_hist_batch_download.log'
-
 S3_ACCESS_KEY_ID        = os.environ['S3_ACCESS_KEY_ID']
 S3_SECRET_ACCESS_KEY    = os.environ['S3_SECRET_ACCESS_KEY']
 S3_REGION_NAME          = os.environ['S3_REGION_NAME']
@@ -29,7 +28,8 @@ SLACK_WEBHOOK           = os.environ['SLACK_WEBHOOK']
 BUCKET_INPUT            = os.environ['BUCKET_INPUT']
 PREFIX_INPUT            = os.environ['PREFIX_INPUT']
 BASE_PATH               = '/NATS/scripts'
-LOG_FILE                = '/NATS/log/nats_hist_batch_setup.log'
+LOG_SUFFIX = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
+LOG_FILE                = '/NATS/log/nats_hist_batch_download' + LOG_SUFFIX
 CSV_SUFFIX = PREFIX_INPUT.split('/')[-1]
 TPExecutor = concurrent.futures.ThreadPoolExecutor
 
