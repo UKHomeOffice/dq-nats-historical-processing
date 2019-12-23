@@ -50,8 +50,7 @@ VOLUME ["/NATS"]
 RUN chown -R runner:runner /NATS
 
 RUN chown runner:runner /docker-entrypoint.sh && \
-chmod +x /docker-entrypoint.sh && \
-chmod +x /bin/run_nats.ksh
+chmod +x /docker-entrypoint.sh
 
 USER ${USERMAP_UID}
 
@@ -61,4 +60,4 @@ ENTRYPOINT ["/docker-entrypoint.sh"]
 
 # Execute Shell Script.
 
-CMD /NATS/bin/run_nats.ksh
+CMD /NATS/bin/run_nats.sh
