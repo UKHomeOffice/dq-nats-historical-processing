@@ -36,7 +36,7 @@ spec:
             valueFrom:
               secretKeyRef:
                 name: dq-nats-historical-processing
-                key: BATCH_SIZE   
+                key: BATCH_SIZE
           - name: S3_SRC_BUCKET_NAME
             valueFrom:
               secretKeyRef:
@@ -47,6 +47,70 @@ spec:
               secretKeyRef:
                 name: dq-nats-historical-processing
                 key: S3_SRC_KEY_PREFIX
+          - name: S3_SRC_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: dq-nats-historical-processing
+                key: S3_SRC_ACCESS_KEY_ID
+          - name: S3_SRC_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: dq-nats-historical-processing
+                key: S3_SRC_SECRET_ACCESS_KEY
+          - name: S3_DST_BUCKET_LOCATION
+            valueFrom:
+              secretKeyRef:
+                name: dq-nats-historical-processing
+                key: S3_DST_BUCKET_LOCATION
+          - name: S3_DST_ACCESS_KEY_ID
+            valueFrom:
+              secretKeyRef:
+                name: dq-nats-historical-processing
+                key: S3_DST_ACCESS_KEY_ID
+          - name: S3_DST_SECRET_ACCESS_KEY
+            valueFrom:
+              secretKeyRef:
+                name: dq-nats-historical-processing
+                key: S3_DST_SECRET_ACCESS_KEY
+          - name: SLACK_WEBHOOK
+            valueFrom:
+              secretKeyRef:
+                name: dq-nats-historical-processing
+                key: SLACK_WEBHOOK
+      - name: processing2
+        image: quay.io/ukhomeofficedigital/dq-nats-historical-processing:{{.DRONE_COMMIT_SHA}}
+        imagePullPolicy: Always
+        securityContext:
+          runAsNonRoot: true
+          runAsUser: 1000
+        resources:
+          limits:
+            cpu: {{.NATS_CPU_LIMIT}}
+            memory: {{.NATS_RAM_LIMIT}}
+          requests:
+            cpu: {{.NATS_CPU_REQUEST}}
+            memory: {{.NATS_RAM_REQUEST}}
+        env:
+          - name: S3_REGION_NAME
+            valueFrom:
+              secretKeyRef:
+                name: dq-nats-historical-processing
+                key: S3_REGION_NAME
+          - name: BATCH_SIZE
+            valueFrom:
+              secretKeyRef:
+                name: dq-nats-historical-processing
+                key: BATCH_SIZE
+          - name: S3_SRC_BUCKET_NAME
+            valueFrom:
+              secretKeyRef:
+                name: dq-nats-historical-processing
+                key: S3_SRC_BUCKET_NAME
+          - name: S3_SRC_KEY_PREFIX
+            valueFrom:
+              secretKeyRef:
+                name: dq-nats-historical-processing
+                key: S3_SRC_KEY_PREFIX_2
           - name: S3_SRC_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
