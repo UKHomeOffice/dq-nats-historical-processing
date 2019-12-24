@@ -6,14 +6,10 @@ ENV PYTHONPATH="$PYTHONPATH:/NATS"
 # Setup folder structure and copy files
 RUN mkdir -p \
              /tmp/NATS/scripts \
-             /tmp/NATS/data/nats \
              /tmp/NATS/stage/nats \
-             /tmp/NATS/quarantine/nats \
-             /tmp/NATS/failed_to_parse/nats \
              /tmp/NATS/log \
              /tmp/NATS/bin \
-             /NATS \
-             /home/runner/.ssh
+             /NATS
 
 COPY packages.txt /tmp/NATS/scripts
 COPY docker-entrypoint.sh /
@@ -25,8 +21,7 @@ RUN groupadd -r runner && \
     useradd --no-log-init -u $USERMAP_UID -r -g runner runner && \
     groupadd docker && \
     usermod -aG docker runner && \
-    chown -R runner:runner /NATS && \
-    chown -R runner:runner /home/runner/.ssh
+    chown -R runner:runner /NATS
 
 # Install script dependencies
 RUN yum update -y
