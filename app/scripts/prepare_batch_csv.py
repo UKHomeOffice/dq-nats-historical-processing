@@ -10,17 +10,17 @@ import random
 import string
 
 
-BATCHSIZE                   = int(os.environ['BATCHSIZE'])
-S3_SRC_ACCESS_KEY_ID        = os.environ['S3_SRC_ACCESS_KEY_ID']
-S3_SRC_SECRET_ACCESS_KEY    = os.environ['S3_SRC_SECRET_ACCESS_KEY']
-S3_REGION_NAME              = os.environ['S3_REGION_NAME']
-SLACK_WEBHOOK               = os.environ['SLACK_WEBHOOK']
-S3_SRC_BUCKET_NAME          = os.environ['S3_SRC_BUCKET_NAME']
-S3_SRC_KEY_PREFIX           = os.environ['S3_SRC_KEY_PREFIX']
-BASE_PATH                   = '/NATS/scripts'
-LOG_SUFFIX                  = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
-LOG_FILE                    = '/NATS/log/nats_hist_batch_setup' + LOG_SUFFIX
-CSV_SUFFIX                  = S3_SRC_KEY_PREFIX.split('/')[-1]
+BATCH_SIZE               = int(os.environ['BATCH_SIZE'])
+S3_SRC_ACCESS_KEY_ID     = os.environ['S3_SRC_ACCESS_KEY_ID']
+S3_SRC_SECRET_ACCESS_KEY = os.environ['S3_SRC_SECRET_ACCESS_KEY']
+S3_REGION_NAME           = os.environ['S3_REGION_NAME']
+SLACK_WEBHOOK            = os.environ['SLACK_WEBHOOK']
+S3_SRC_BUCKET_NAME       = os.environ['S3_SRC_BUCKET_NAME']
+S3_SRC_KEY_PREFIX        = os.environ['S3_SRC_KEY_PREFIX']
+BASE_PATH                = '/NATS/scripts'
+LOG_SUFFIX               = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
+LOG_FILE                 = '/NATS/log/nats_hist_batch_setup' + LOG_SUFFIX
+CSV_SUFFIX               = S3_SRC_KEY_PREFIX.split('/')[-1]
 
 def send_message_to_slack(text):
     """
@@ -141,7 +141,7 @@ def main():
     new_dict = defaultdict(list)
     i=0
     for n,key in enumerate(get_matching_s3_keys(bucket=S3_SRC_BUCKET_NAME, prefix=S3_SRC_KEY_PREFIX, suffix='.json')):
-        if(n % BATCHSIZE == 0):
+        if(n % BATCH_SIZE == 0):
             i=i+1
         new_dict['batch' + str(i)].append(key)
 

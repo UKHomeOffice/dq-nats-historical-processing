@@ -24,64 +24,37 @@ Tasks include:
   - *Dockerfile*: describe what is installed in the container and the Python file that needs to run
   - *docker-entrypoint.sh*: bash scripts running at container startup
   - *packages.txt*: Python custom Modules
-  - *ecosystem.config.js*: declare variables used by PM2 at runtime
   - **bin/**
-    - *DQ_NATS_file_ingest*: Python script used with PM2 to declare imported files to PM2 at runtime
+    - *run_nats.sh*: Bash script runtime
   - **scripts/**
-    - *__init__.py*: declare Python module import
     - *prepare_batch_csv.py*: Python3.7 script running within the container
     - *download_batchfiles.py*: Python3.7 script running within the container
     - *upload_batchfiles.py*: Python3.7 script running within the container
-    - *settings.py*: declare variables passed to the *DQ_NATS_file_ingest.py* file at runtime
-  - **test/**
-    - *start.sh*: Download, build and run Docker containers
-    - *stop.sh*: Stop and remove **all** Docker containers
-    - *eicar.com*: File containing a test virus string
 - **kube/**
-  - *deployment.yml*: describe a Kubernetes POD deployment
+  - *job.yml*: describe a Kubernetes POD job
   - *pvc.yml*: declare a Persistent Volume in Kubernetes
   - *secret.yml*: list the Drone secrets passed to the containers during deployment  
 - *.drone.yml*: CI deployment configuration
 - *LICENSE*: MIT license file
 - *README.md*: readme file
 
-## Kubernetes POD connectivity
-
-The POD consists of 8 (eight) Docker containers responsible for handling data.
-
-| Container Name | Function | Language | Exposed port | Managed by |
-| :--- | :---: | :---: | ---: | --- |
-| dq-nats-data-ingest | Data pipeline app| Python3.7 | N/A | DQ Devops |
-| clamav-api | API for virus checks | N/A | 8080 |ACP |
-| clamav | Database for virus checks | N/A | 3310 |ACP |
-
-
 ## Data flow
 
-- *prepare_batch_csv.py* GET files from an external SFTP server
-- *download_batchfiles.py* DELETE files from SFTP
-- *upload_batchfiles.py* DELETE files from SFTP
-- sending these files to *clamav-api* with destination *localhost:8080*
-- files are being sent from *clamav-api* to *clamav* with destination *localhost:3310*
-- *OK* or *!OK* response text is sent back to *dq-nats-data-ingest*
-  - *IF OK* file is uploaded to S3 and deleted from local storage
-  - *IF !OK* file is moved to quarantine on the PVC
+- *prepare_batch_csv.py* LIST files from S3
+- *download_batchfiles.py* GET files from S3
+- *upload_batchfiles.py* PUT files to S3
 
 ## Drone secrets
 
 Environmental variables are set in Drone based on secrets listed in the *.drone.yml* file and they are passed to Kubernetes as required.
 
-## Local Test suite
+## Secrets
 
-Testing the NATS Python script can be done by having access to AWS S3 and Docker.
-The full stack comprises of 4 Docker containers within the same network linked to each other so DNS name resolution works between the components.
-
-The containers can be started and a couple of test files generated using the *start.sh* script located in **app/test**.
 The script will require the following variables passed in at runtime.
 
 |Name|Value|Required|Description|
 | --- |:---:| :---:| --- |
-| BATCHSIZE | 300 | True | Size of the batch|
+| BATCH_SIZE | 300 | True | Size of the batch|
 | S3_SRC_BUCKET_NAME|  Input s3-bucket-name| True | S3 bucket name|
 | S3_DST_BUCKET_LOCATION | Output s3-bucket-location | True | S3 bucket location |
 | S3_SRC_KEY_PREFIX | prefix | True | S3 folder name |
@@ -93,33 +66,4 @@ The script will require the following variables passed in at runtime.
 | SLACK_WEBHOOK | https://hooks.slack.com/services/ABCDE12345 | True | Slack Webhook URL |
 
 - Components:
-  - SFTP container
-  - ClamAV container
-  - ClamAV REST API container
   - NATS Python container
-
-After the script has completed - for the first time it will take around 5 minutes to download all images - there should be a test files in the S3 bucket:
-
-```
-[-PRMD=EG-ADMD=ICAO-C=XX-;MTA-EGGG-1-MTCU_YYYYYYYYYYYYYYYY].json
-```
-The other test file contains a test virus string and it will be located under:
-
-```
-/NATS/quarantine/nats/[-PRMD=EG-ADMD=ICAO-C=XX-;MTA-EGGG-1-MTCU_YYYYYYYYYYYYYYYY].json
-```
-
-
-
-If files have not uploaded into s3, check the error logs by exec'ing into the nats python container and checking error.log file. The path of this file is shown by entering the command:
-
-```
-pm2 show 0
-```
-
-If the logs read that the private key found is not a valid format, then cat your id_rsa file to check if the the format is OPENSSH. If you generated your keys specifying RSA type and you still have OPENSSH, then use this command to generate the keys again:
-
-```
-ssh-keygen -t rsa -b 4096 -C "email@email.com" -m PEM -f /Path-to-file/id_rsa
-```
-Some versions of macs auto-format ssh-keys to OPENSSH even when RSA is specified and need to be converted using this command.

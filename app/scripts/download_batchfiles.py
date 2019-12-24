@@ -28,10 +28,10 @@ SLACK_WEBHOOK            = os.environ['SLACK_WEBHOOK']
 S3_SRC_BUCKET_NAME       = os.environ['S3_SRC_BUCKET_NAME']
 S3_SRC_KEY_PREFIX        = os.environ['S3_SRC_KEY_PREFIX']
 BASE_PATH                = '/NATS/scripts'
-LOG_SUFFIX = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
-LOG_FILE                = '/NATS/log/nats_hist_batch_download' + LOG_SUFFIX
-CSV_SUFFIX              = S3_SRC_KEY_PREFIX.split('/')[-1]
-TPExecutor              = concurrent.futures.ThreadPoolExecutor
+LOG_SUFFIX               = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
+LOG_FILE                 = '/NATS/log/nats_hist_batch_download' + LOG_SUFFIX
+CSV_SUFFIX               = S3_SRC_KEY_PREFIX.split('/')[-1]
+TPExecutor               = concurrent.futures.ThreadPoolExecutor
 
 def send_message_to_slack(text):
     """

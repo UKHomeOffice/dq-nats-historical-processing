@@ -22,18 +22,17 @@ logging.getLogger('botocore').setLevel(logging.CRITICAL)
 logging.getLogger('s3transfer').setLevel(logging.CRITICAL)
 logging.getLogger('urllib3').setLevel(logging.CRITICAL)
 
-S3_DST_ACCESS_KEY_ID        = os.environ['S3_DST_ACCESS_KEY_ID']
-S3_DST_SECRET_ACCESS_KEY    = os.environ['S3_DST_SECRET_ACCESS_KEY']
-S3_REGION_NAME              = os.environ['S3_REGION_NAME']
-SLACK_WEBHOOK               = os.environ['SLACK_WEBHOOK']
-S3_DST_BUCKET_LOCATION      = os.environ['S3_DST_BUCKET_LOCATION']
-#S3_DST_KEY_PREFIX           = os.environ['S3_DST_KEY_PREFIX']
-S3_SRC_BUCKET_NAME          = os.environ['S3_SRC_BUCKET_NAME']
-S3_SRC_KEY_PREFIX           = os.environ['S3_SRC_KEY_PREFIX']
-BASE_PATH                   = '/NATS/scripts'
-LOG_SUFFIX = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
-LOG_FILE                = '/NATS/log/nats_hist_batch_upload' + LOG_SUFFIX
-CSV_SUFFIX = S3_SRC_KEY_PREFIX.split('/')[-1]
+S3_DST_ACCESS_KEY_ID     = os.environ['S3_DST_ACCESS_KEY_ID']
+S3_DST_SECRET_ACCESS_KEY = os.environ['S3_DST_SECRET_ACCESS_KEY']
+S3_REGION_NAME           = os.environ['S3_REGION_NAME']
+SLACK_WEBHOOK            = os.environ['SLACK_WEBHOOK']
+S3_DST_BUCKET_LOCATION   = os.environ['S3_DST_BUCKET_LOCATION']
+S3_SRC_BUCKET_NAME       = os.environ['S3_SRC_BUCKET_NAME']
+S3_SRC_KEY_PREFIX        = os.environ['S3_SRC_KEY_PREFIX']
+BASE_PATH                = '/NATS/scripts'
+LOG_SUFFIX               = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
+LOG_FILE                 = '/NATS/log/nats_hist_batch_upload' + LOG_SUFFIX
+CSV_SUFFIX               = S3_SRC_KEY_PREFIX.split('/')[-1]
 
 def batch_check(myfile):
         try:

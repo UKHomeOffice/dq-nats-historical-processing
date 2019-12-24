@@ -32,6 +32,11 @@ spec:
               secretKeyRef:
                 name: dq-nats-historical-processing
                 key: S3_REGION_NAME
+          - name: BATCH_SIZE
+            valueFrom:
+              secretKeyRef:
+                name: dq-nats-historical-processing
+                key: BATCH_SIZE   
           - name: S3_SRC_BUCKET_NAME
             valueFrom:
               secretKeyRef:
@@ -52,16 +57,11 @@ spec:
               secretKeyRef:
                 name: dq-nats-historical-processing
                 key: S3_SRC_SECRET_ACCESS_KEY
-          - name: S3_DST_BUCKET_NAME
+          - name: S3_DST_BUCKET_LOCATION
             valueFrom:
               secretKeyRef:
                 name: dq-nats-historical-processing
-                key: S3_DST_BUCKET_NAME
-          - name: S3_DST_KEY_PREFIX
-            valueFrom:
-              secretKeyRef:
-                name: dq-nats-historical-processing
-                key: S3_DST_KEY_PREFIX
+                key: S3_DST_BUCKET_LOCATION
           - name: S3_DST_ACCESS_KEY_ID
             valueFrom:
               secretKeyRef:
