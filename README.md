@@ -47,7 +47,7 @@ Tasks include:
 
 ## Kubernetes POD connectivity
 
-The POD consists of 3 (three) Docker containers responsible for handling data.
+The POD consists of 8 (eight) Docker containers responsible for handling data.
 
 | Container Name | Function | Language | Exposed port | Managed by |
 | :--- | :---: | :---: | ---: | --- |
