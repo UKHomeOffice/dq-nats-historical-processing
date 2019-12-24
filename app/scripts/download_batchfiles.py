@@ -21,17 +21,17 @@ logging.getLogger('botocore').setLevel(logging.CRITICAL)
 logging.getLogger('s3transfer').setLevel(logging.CRITICAL)
 logging.getLogger('urllib3').setLevel(logging.CRITICAL)
 
-S3_ACCESS_KEY_ID        = os.environ['S3_ACCESS_KEY_ID']
-S3_SECRET_ACCESS_KEY    = os.environ['S3_SECRET_ACCESS_KEY']
-S3_REGION_NAME          = os.environ['S3_REGION_NAME']
-SLACK_WEBHOOK           = os.environ['SLACK_WEBHOOK']
-BUCKET_INPUT            = os.environ['BUCKET_INPUT']
-PREFIX_INPUT            = os.environ['PREFIX_INPUT']
-BASE_PATH               = '/NATS/scripts'
+S3_SRC_ACCESS_KEY_ID     = os.environ['S3_SRC_ACCESS_KEY_ID']
+S3_SRC_SECRET_ACCESS_KEY = os.environ['S3_SRC_SECRET_ACCESS_KEY']
+S3_REGION_NAME           = os.environ['S3_REGION_NAME']
+SLACK_WEBHOOK            = os.environ['SLACK_WEBHOOK']
+S3_SRC_BUCKET_NAME       = os.environ['S3_SRC_BUCKET_NAME']
+S3_SRC_KEY_PREFIX        = os.environ['S3_SRC_KEY_PREFIX']
+BASE_PATH                = '/NATS/scripts'
 LOG_SUFFIX = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
 LOG_FILE                = '/NATS/log/nats_hist_batch_download' + LOG_SUFFIX
-CSV_SUFFIX = PREFIX_INPUT.split('/')[-1]
-TPExecutor = concurrent.futures.ThreadPoolExecutor
+CSV_SUFFIX              = S3_SRC_KEY_PREFIX.split('/')[-1]
+TPExecutor              = concurrent.futures.ThreadPoolExecutor
 
 def send_message_to_slack(text):
     """
@@ -77,15 +77,15 @@ def send_message_to_slack(text):
 def download(myfile):
         #session = boto3.Session(profile_name=PROFILE)
         boto_s3_session = boto3.Session(
-            aws_access_key_id=S3_ACCESS_KEY_ID,
-            aws_secret_access_key=S3_SECRET_ACCESS_KEY,
+            aws_access_key_id=S3_SRC_ACCESS_KEY_ID,
+            aws_secret_access_key=S3_SRC_SECRET_ACCESS_KEY,
             region_name=S3_REGION_NAME
         )
         s3 = boto_s3_session.resource('s3')
         try:
             file_name = unquote(myfile.split('/')[-1])
             download_path = '{0}{1}'.format(BASE_PATH,file_name)
-            s3.Bucket(BUCKET_INPUT).download_file(myfile, download_path)
+            s3.Bucket(S3_SRC_BUCKET_NAME).download_file(myfile, download_path)
             logger.info('File Downloaded')
         except botocore.exceptions.ClientError as err:
             if err.response['Error']['Code'] == "404":

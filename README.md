@@ -81,14 +81,16 @@ The script will require the following variables passed in at runtime.
 
 |Name|Value|Required|Description|
 | --- |:---:| :---:| --- |
-| pubkey | /local/path/id_rsa.pub | True | Public SSH key used by the SFTP server|
-| privkey | /local/path/id_rsa | True | Private SSH used to connect to the SFTP server|
-| mountpoint|  /local/path/mountpoint-dir | True | SFTP source directory|
-| bucketname | s3-bucket-name | True | S3 bucket name |
-| keyprefix | prefix | True | S3 folder name |
-| awskeyid | ABCD | True | AWS access key ID |
-| awssecret | abcdb1234 | True | AWS Secret access key |
-| webhook | https://hooks.slack.com/services/ABCDE12345 | True | Slack Webhook URL |
+| BATCHSIZE | 300 | True | Size of the batch|
+| S3_SRC_BUCKET_NAME|  Input s3-bucket-name| True | S3 bucket name|
+| S3_DST_BUCKET_LOCATION | Output s3-bucket-location | True | S3 bucket location |
+| S3_SRC_KEY_PREFIX | prefix | True | S3 folder name |
+| S3_SRC_ACCESS_KEY_ID | ABCD | True | AWS access key ID |
+| S3_DST_ACCESS_KEY_ID | ABCD | True | AWS access key ID |
+| S3_SRC_SECRET_ACCESS_KEY | abcdb1234 | True | AWS Secret access key |
+| S3_DST_SECRET_ACCESS_KEY | abcdb1234 | True | AWS Secret access key |
+| S3_REGION_NAME | eu-west-2 | True | AWS Region Name |
+| SLACK_WEBHOOK | https://hooks.slack.com/services/ABCDE12345 | True | Slack Webhook URL |
 
 - Components:
   - SFTP container
@@ -107,21 +109,7 @@ The other test file contains a test virus string and it will be located under:
 /NATS/quarantine/nats/[-PRMD=EG-ADMD=ICAO-C=XX-;MTA-EGGG-1-MTCU_YYYYYYYYYYYYYYYY].json
 ```
 
-- Launching the test suite
 
-NOTE: navigate to **app/test** first.
-
-```
-sh start.sh
-```
-
-- When done with testing stop the test suite
-
-NOTE: **all** running containers will be stopped
-
-```
-sh stop.sh
-```
 
 If files have not uploaded into s3, check the error logs by exec'ing into the nats python container and checking error.log file. The path of this file is shown by entering the command:
 

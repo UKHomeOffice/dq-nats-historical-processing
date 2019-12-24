@@ -10,17 +10,17 @@ import random
 import string
 
 
-BATCHSIZE               = int(os.environ['BATCHSIZE'])
-S3_ACCESS_KEY_ID        = os.environ['S3_ACCESS_KEY_ID']
-S3_SECRET_ACCESS_KEY    = os.environ['S3_SECRET_ACCESS_KEY']
-S3_REGION_NAME          = os.environ['S3_REGION_NAME']
-SLACK_WEBHOOK           = os.environ['SLACK_WEBHOOK']
-BUCKET_INPUT            = os.environ['BUCKET_INPUT']
-PREFIX_INPUT            = os.environ['PREFIX_INPUT']
-BASE_PATH               = '/NATS/scripts'
-LOG_SUFFIX              = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
-LOG_FILE                = '/NATS/log/nats_hist_batch_setup' + LOG_SUFFIX
-CSV_SUFFIX              = PREFIX_INPUT.split('/')[-1]
+BATCHSIZE                   = int(os.environ['BATCHSIZE'])
+S3_SRC_ACCESS_KEY_ID        = os.environ['S3_SRC_ACCESS_KEY_ID']
+S3_SRC_SECRET_ACCESS_KEY    = os.environ['S3_SRC_SECRET_ACCESS_KEY']
+S3_REGION_NAME              = os.environ['S3_REGION_NAME']
+SLACK_WEBHOOK               = os.environ['SLACK_WEBHOOK']
+S3_SRC_BUCKET_NAME          = os.environ['S3_SRC_BUCKET_NAME']
+S3_SRC_KEY_PREFIX           = os.environ['S3_SRC_KEY_PREFIX']
+BASE_PATH                   = '/NATS/scripts'
+LOG_SUFFIX                  = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
+LOG_FILE                    = '/NATS/log/nats_hist_batch_setup' + LOG_SUFFIX
+CSV_SUFFIX                  = S3_SRC_KEY_PREFIX.split('/')[-1]
 
 def send_message_to_slack(text):
     """
@@ -74,8 +74,8 @@ def get_matching_s3_objects(bucket, prefix="", suffix=""):
         this suffix (optional).
     """
     boto_s3_session = boto3.Session(
-        aws_access_key_id=S3_ACCESS_KEY_ID,
-        aws_secret_access_key=S3_SECRET_ACCESS_KEY,
+        aws_access_key_id=S3_SRC_ACCESS_KEY_ID,
+        aws_secret_access_key=S3_SRC_SECRET_ACCESS_KEY,
         region_name=S3_REGION_NAME
     )
     s3 = boto_s3_session.client('s3')
@@ -140,7 +140,7 @@ def main():
     logger.info('Geting List of S3 Files for Download')
     new_dict = defaultdict(list)
     i=0
-    for n,key in enumerate(get_matching_s3_keys(bucket=BUCKET_INPUT, prefix=PREFIX_INPUT, suffix='.json')):
+    for n,key in enumerate(get_matching_s3_keys(bucket=S3_SRC_BUCKET_NAME, prefix=S3_SRC_KEY_PREFIX, suffix='.json')):
         if(n % BATCHSIZE == 0):
             i=i+1
         new_dict['batch' + str(i)].append(key)

@@ -22,17 +22,16 @@ logging.getLogger('botocore').setLevel(logging.CRITICAL)
 logging.getLogger('s3transfer').setLevel(logging.CRITICAL)
 logging.getLogger('urllib3').setLevel(logging.CRITICAL)
 
-S3_ACCESS_KEY_ID        = os.environ['S3_ACCESS_KEY_ID']
-S3_SECRET_ACCESS_KEY    = os.environ['S3_SECRET_ACCESS_KEY']
-S3_REGION_NAME          = os.environ['S3_REGION_NAME']
-SLACK_WEBHOOK           = os.environ['SLACK_WEBHOOK']
-BUCKET_INPUT            = os.environ['BUCKET_INPUT']
-PREFIX_INPUT            = os.environ['PREFIX_INPUT']
-OUTPUT_BUCKET            = os.environ['OUTPUT_BUCKET']
-BASE_PATH               = '/NATS/scripts'
+S3_DST_ACCESS_KEY_ID        = os.environ['S3_DST_ACCESS_KEY_ID']
+S3_DST_SECRET_ACCESS_KEY    = os.environ['S3_DST_SECRET_ACCESS_KEY']
+S3_REGION_NAME              = os.environ['S3_REGION_NAME']
+SLACK_WEBHOOK               = os.environ['SLACK_WEBHOOK']
+S3_DST_BUCKET_LOCATION      = os.environ['S3_DST_BUCKET_LOCATION']
+#S3_DST_KEY_PREFIX           = os.environ['S3_DST_KEY_PREFIX']
+BASE_PATH                   = '/NATS/scripts'
 LOG_SUFFIX = ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(10)) + ".log"
 LOG_FILE                = '/NATS/log/nats_hist_batch_upload' + LOG_SUFFIX
-CSV_SUFFIX = PREFIX_INPUT.split('/')[-1]
+CSV_SUFFIX = S3_SRC_KEY_PREFIX.split('/')[-1]
 
 def batch_check(myfile):
         try:
@@ -77,14 +76,14 @@ def upload_file_s3(file_location, partition_str):
         #logger.info('Uploading {0}'.format(file_location))
         #session = boto3.Session(profile_name=PROFILE)
         boto_s3_session = boto3.Session(
-            aws_access_key_id=S3_ACCESS_KEY_ID,
-            aws_secret_access_key=S3_SECRET_ACCESS_KEY,
+            aws_access_key_id=S3_DST_ACCESS_KEY_ID,
+            aws_secret_access_key=S3_DST_SECRET_ACCESS_KEY,
             region_name=S3_REGION_NAME
         )
         s3_conn = boto_s3_session.resource('s3')
         file_name = file_location.split('/')[-1]
-        bucket = OUTPUT_BUCKET.split('/')[0]
-        output_path = '/'.join(OUTPUT_BUCKET.split('/')[1:]) + '/' + partition_str
+        bucket = S3_DST_BUCKET_LOCATION.split('/')[0]
+        output_path = '/'.join(S3_DST_BUCKET_LOCATION.split('/')[1:]) + '/' + partition_str
         if os.path.getsize(file_location) != 0:
             s3_conn.Bucket(bucket).upload_file(file_location, '{0}/{1}'.format(output_path, file_name))
             #logger.info('Upload complete')
