@@ -75,10 +75,10 @@ pipeline:
       - KUBE_NAMESPACE=dq-apps
       - INSECURE_SKIP_TLS_VERIFY=true
       - NATS_PVC_SIZE=5Gi
-      - NATS_CPU_REQUEST=2
-      - NATS_CPU_LIMIT=2.5
-      - NATS_RAM_REQUEST=3Gi
-      - NATS_RAM_LIMIT=4Gi
+      - NATS_CPU_REQUEST=1
+      - NATS_CPU_LIMIT=1.5
+      - NATS_RAM_REQUEST=1Gi
+      - NATS_RAM_LIMIT=1.5Gi
     commands:
       - export KUBE_TOKEN=$$PROD_KUBE_TOKEN
       - export KUBE_SERVER=$$PROD_KUBE_SERVER
